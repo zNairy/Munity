@@ -76,14 +76,6 @@ class MunityServer(object):
         return [user for user in self.privateUsers if conn in user]
 
     def OnWaitRoom(self, conn):
-        '''
-        listofinvites = []
-        for user in self.waitRoom:
-            if conn in user:
-                listofinvites.append(user)
-        
-        return listofinvites
-        '''
         return [user for user in self.waitRoom if conn in user]
 
     def SendNotificationPrivate(self, users, conn):
