@@ -60,7 +60,9 @@ class MunityServer(object):
         if(user):
             user = user[0]
             for _user in user:
-                _user.send(f'\n  [*] {self.CheckNickName(_user)}, seu parceiro acabou de te deixar...\n  Voltando ao chat geral...'.encode())
+                if(_user is not conn):
+                    _user.send(f'\n  [*] {self.CheckNickName(_user)}, seu parceiro acabou de te deixar...\n  Voltando ao chat geral...'.encode())
+                    conn.send(f'\n [*] Você deixou o chat privado com {self.CheckNickName(_user)}\n  Voltando ao chat geral...'.encode())
                 self.privateNameUsers.remove(self.CheckNickName(_user))
             
             for _user in self.privateUsers:
