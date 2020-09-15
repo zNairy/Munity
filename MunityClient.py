@@ -79,7 +79,8 @@ class MunityClient(object):
                 print(colored('Connection close...', 'red'))
                 break
             else:
-                print(message.decode('utf-8'))
+                print(message.decode('utf-8'), end='')
+                print(colored(f'\n[{self.nick}]: ', self.nameColor), end='')
 
     def main(self):
         thread = Thread(target=self.ListenServer);thread.daemon=True;thread.start()

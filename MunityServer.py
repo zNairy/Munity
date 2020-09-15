@@ -197,9 +197,9 @@ class MunityServer(object):
                 onprivate = self.OnPrivateRoom(conn)
                 if(onprivate):
                     if(onprivate[0][0] != conn):
-                        onprivate[0][0].send(user_message.encode())
+                        onprivate[0][0].send(f'\n[{apl}]: {user_message}'.encode())
                     else:
-                        onprivate[0][1].send(user_message.encode())
+                        onprivate[0][1].send(f'\n[{apl}]: {user_message}'.encode())
                 else:
                     self.WriteLog(user_message, apl)
                     for user in self.Allusers:
