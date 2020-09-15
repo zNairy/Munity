@@ -144,6 +144,16 @@ class MunityServer(object):
     def CheckNickName(self, connection):
         return [conn[1] for conn in self.Allusers if conn[0] == connection][0]
     
+    def NickAvailable(self, nickname):
+        for name in self.ListOfUsers().split('\n'):
+            if(nickname.strip() == name):
+                return False
+        
+        return True
+
+    def ListOfUsers(self):
+        return ''.join(f'{user[1]}\n' for user in self.Allusers)
+
     def CheckUser(self, nick):
         return [user for user in self.Allusers if user[1] == nick]
 
@@ -152,8 +162,7 @@ class MunityServer(object):
         if(command):
             command = command[0]
             if(command[0] == '/listusers'):
-                listofusers = '\n' + ''.join(f'{user[1]}\n' for user in self.Allusers)
-                conn.send(listofusers.encode())
+                conn.send(f'\n{self.ListOfUsers()}'.encode())
             elif(command[0] == '/private'):
                 if(cmd[9:].strip() != ""):
                     self.AddOnPrivate(cmd[9:].strip(), conn)
@@ -194,7 +203,7 @@ class MunityServer(object):
                 self.RemoveConnection(apl)
                 break
             elif(user_message[0] == '/'):
-                self.SendCommand(user_message, conn)    
+                self.SendCommand(user_message, conn)
             else:
                 onprivate = self.OnPrivateRoom(conn)
                 if(onprivate):
@@ -219,10 +228,14 @@ class MunityServer(object):
             while True:
                 connection, adress = self.server.accept()
                 apl = connection.recv(self.buffer);apl = apl.decode('utf-8')
-                connection.send(f'  Welcome to Munity {apl}\n  Você está no canal geral!'.encode())
-                self.AddUser(connection, apl)
-                print(colored(f'  {apl} - has joinned...', 'green'))
-                thread = Thread(target=self.ListenUsers, args=(connection, apl));thread.daemon=True;thread.start()
+                if(self.NickAvailable(apl)):
+                    connection.send(f'  Welcome to Munity {apl}\n  Você está no canal geral!'.encode())
+                    self.AddUser(connection, apl)
+                    print(colored(f'  {apl} - has joinned...', 'green'))
+                    thread = Thread(target=self.ListenUsers, args=(connection, apl));thread.daemon=True;thread.start()
+                else:
+                    connection.send(f'\n Esse nick name já está em uso, por favor reinicie e tente outro...'.encode())
+
         except KeyboardInterrupt:
             print()
             exit(0)
